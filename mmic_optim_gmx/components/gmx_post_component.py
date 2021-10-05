@@ -1,7 +1,7 @@
 # Import models
-from mmic_optim.models.output import OptimOutput
+from mmic_optim.models.output import OutputOptim
 from mmelemental.models import Molecule, Trajectory
-from ..models import ComputeGmxOutput
+from ..models import OutputComputeGmx
 
 # Import components
 from mmic.components.blueprints import GenericComponent
@@ -17,20 +17,20 @@ __all__ = ["PostGmxComponent"]
 class PostGmxComponent(GenericComponent):
     @classmethod
     def input(cls):
-        return ComputeGmxOutput
+        return OutputComputeGmx
 
     @classmethod
     def output(cls):
-        return OptimOutput
+        return OutputComputeGmx
 
     def execute(
         self,
-        inputs: ComputeGmxOutput,
+        inputs: OutputComputeGmx,
         extra_outfiles: Optional[List[str]] = None,
         extra_commands: Optional[List[str]] = None,
         scratch_name: Optional[str] = None,
         timeout: Optional[int] = None,
-    ) -> Tuple[bool, OptimOutput]:
+    ) -> Tuple[bool, OutputOptim]:
 
         """
         This method translate the output of em
@@ -61,7 +61,7 @@ class PostGmxComponent(GenericComponent):
 
         return (
             True,
-            OptimOutput(
+            OutputOptim(
                 proc_input=inputs.proc_input,
                 molecule=mol,
                 trajectory=traj,

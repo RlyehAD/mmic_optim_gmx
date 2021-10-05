@@ -1,13 +1,13 @@
-from cmselemental.models.procedures import ProcInput
-from mmic_optim.models import OptimInput
+from cmselemental.models.procedures import InputProc
+from mmic_optim.models import InputOptim
 from pydantic import Field
 
 
-__all__ = ["ComputeGmxInput"]
+__all__ = ["InputComputeGmx"]
 
 
-class ComputeGmxInput(ProcInput):
-    proc_input: OptimInput = Field(..., description="Procedure input schema.")
+class InputComputeGmx(InputProc):
+    proc_input: InputOptim = Field(..., description="Procedure input schema.")
     mdp_file: str = Field(
         ...,
         description="The file used for specifying the parameters. Should be a .mdp file.",

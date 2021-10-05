@@ -1,13 +1,13 @@
 from cmselemental.models.base import ProtoModel
-from mmic_optim.models import OptimInput
+from mmic_optim.models import InputOptim
 from pydantic import Field
 
 
-__all__ = ["ComputeGmxOutput"]
+__all__ = ["OutputComputeGmx"]
 
 
-class ComputeGmxOutput(ProtoModel):
-    proc_input: OptimInput = Field(..., description="Procedure input schema.")
+class OutputComputeGmx(ProtoModel):
+    proc_input: InputOptim = Field(..., description="Procedure input schema.")
     molecule: str = Field(..., description="Molecule file string object")
     trajectory: str = Field(..., description="Trajectory file string object.")
     scratch_dir: str = Field(

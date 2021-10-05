@@ -1,5 +1,5 @@
 # Import schema models for energy optim
-from mmic_optim.models import OptimInput, OptimOutput
+from mmic_optim.models import InputOptim, OutputOptim
 
 # Import subcomponents for running energy min with GMX
 from .gmx_prep_component import PrepGmxComponent
@@ -17,20 +17,20 @@ class OptimGmxComponent(TacticComponent):
 
     @classmethod
     def input(cls):
-        return OptimInput
+        return InputOptim
 
     @classmethod
     def output(cls):
-        return OptimOutput
+        return OutputOptim
 
     def execute(
         self,
-        inputs: OptimInput,
+        inputs: InputOptim,
         extra_outfiles: Optional[List[str]] = None,
         extra_commands: Optional[List[str]] = None,
         scratch_name: Optional[str] = None,
         timeout: Optional[int] = None,
-    ) -> Tuple[bool, OptimOutput]:
+    ) -> Tuple[bool, OutputOptim]:
 
         computeInput = PrepGmxComponent.compute(inputs)
         computeOutput = ComputeGmxComponent.compute(computeInput)

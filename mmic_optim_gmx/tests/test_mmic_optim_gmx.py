@@ -5,7 +5,7 @@ Unit and regression test for the mmic_optim_gmx package.
 # Import package, test suite, and other packages as needed
 import mmelemental
 import mmic_optim
-from mmic_optim import OptimInput, OptimOutput
+from mmic_optim import InputOptim, OutputOptim
 from mmelemental.models import Molecule, Trajectory, ForceField
 import mmic_optim_gmx
 
@@ -35,7 +35,7 @@ def test_preprocess_component():
     # ff = mmelemental.models.ForceField.from_file("temp.json")
     # traj = Trajectory.from_file(traj_file)
 
-    inputs = OptimInput(
+    inputs = InputOptim(
         engine="gmx",  # This is important
         schema_name="test",
         schema_version=1.0,

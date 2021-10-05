@@ -1,5 +1,5 @@
 # Import models
-from ..models import ComputeGmxInput, ComputeGmxOutput
+from ..models import InputComputeGmx, OutputComputeGmx
 
 # Import components
 from mmic_cmd.components import CmdComponent
@@ -18,20 +18,20 @@ __all__ = ["ComputeGmxComponent"]
 class ComputeGmxComponent(GenericComponent):
     @classmethod
     def input(cls):
-        return ComputeGmxInput
+        return InputComputeGmx
 
     @classmethod
     def output(cls):
-        return ComputeGmxOutput
+        return OutputComputeGmx
 
     def execute(
         self,
-        inputs: ComputeGmxInput,
+        inputs: InputComputeGmx,
         extra_outfiles: Optional[List[str]] = None,
         extra_commands: Optional[List[str]] = None,
         scratch_name: Optional[str] = None,
         timeout: Optional[int] = None,
-    ) -> Tuple[bool, ComputeGmxOutput]:
+    ) -> Tuple[bool, OutputComputeGmx]:
 
         # Call gmx pdb2gmx, mdrun, etc. here
         if isinstance(inputs, dict):
@@ -190,7 +190,7 @@ class ComputeGmxComponent(GenericComponent):
 
     def parse_output(
         self, output: Dict[str, str], inputs: Dict[str, Any]
-    ) -> ComputeGmxInput:
+    ) -> InputComputeGmx:
         # stdout = output["stdout"]
         # stderr = output["stderr"]
         outfiles = output["outfiles"]

@@ -1,6 +1,6 @@
 # Import models
-from mmic_optim.models.input import OptimInput
-from mmic_optim_gmx.models import ComputeGmxInput
+from mmic_optim.models.input import InputOptim
+from mmic_optim_gmx.models import InputComputeGmx
 
 
 # Import components
@@ -27,20 +27,20 @@ class PrepGmxComponent(GenericComponent):
 
     @classmethod
     def input(cls):
-        return OptimInput
+        return InputOptim
 
     @classmethod
     def output(cls):
-        return ComputeGmxInput
+        return InputComputeGmx
 
     def execute(
         self,
-        inputs: OptimInput,
+        inputs: InputOptim,
         extra_outfiles: Optional[List[str]] = None,
         extra_commands: Optional[List[str]] = None,
         scratch_name: Optional[str] = None,
         timeout: Optional[int] = None,
-    ) -> Tuple[bool, ComputeGmxInput]:
+    ) -> Tuple[bool, InputComputeGmx]:
 
         if isinstance(inputs, dict):
             inputs = self.input()(**inputs)
@@ -119,7 +119,7 @@ class PrepGmxComponent(GenericComponent):
         scratch_dir = str(rvalue.scratch_directory)
         self.cleanup(clean_files)  # Del the gro in the working dir
 
-        gmx_compute = ComputeGmxInput(
+        gmx_compute = InputComputeGmx(
             proc_input=inputs,
             schema_name=inputs.schema_name,
             schema_version=inputs.schema_version,
