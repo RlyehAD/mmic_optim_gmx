@@ -1,7 +1,7 @@
 # Import models
 from mmic_optim.models.input import InputOptim
 from mmic_optim_gmx.models import InputComputeGmx
-
+from cmselemental.util.decorators import classproperty
 
 # Import components
 from mmic_cmd.components import CmdComponent
@@ -25,13 +25,23 @@ class PrepGmxComponent(GenericComponent):
     according to the info in MMIC schema.
     """
 
-    @classmethod
+    @classproperty
     def input(cls):
         return InputOptim
 
-    @classmethod
+    @classproperty
     def output(cls):
         return InputComputeGmx
+
+    @classproperty
+    def version(cls) -> str:
+        """Finds program, extracts version, returns normalized version string.
+        Returns
+        -------
+        str
+            Return a valid, safe python version string.
+        """
+        return ""
 
     def execute(
         self,
@@ -43,7 +53,7 @@ class PrepGmxComponent(GenericComponent):
     ) -> Tuple[bool, InputComputeGmx]:
 
         if isinstance(inputs, dict):
-            inputs = self.input()(**inputs)
+            inputs = self.input(**inputs)
 
         mdp_inputs = {
             "integrator": inputs.method,
@@ -91,7 +101,7 @@ class PrepGmxComponent(GenericComponent):
         with open(mdp_file, "w") as inp:
             for key, val in mdp_inputs.items():
                 inp.write(f"{key} = {val}\n")
-
+        """
         fs = inputs.forcefield
         mols = inputs.molecule
 
@@ -99,6 +109,9 @@ class PrepGmxComponent(GenericComponent):
             fs.items()
         ).pop()  # Here ff_name gets actually the related mol name, but it will not be used
         mol_name, mol = list(mols.items()).pop()
+        """
+
+        mol, ff = list(inputs.system.items()).pop()
 
         gro_file = tempfile.NamedTemporaryFile(suffix=".gro")  # output gro
         top_file = tempfile.NamedTemporaryFile(suffix=".top")

@@ -1,5 +1,6 @@
 # Import schema models for energy optim
 from mmic_optim.models import InputOptim, OutputOptim
+from cmselemental.util.decorators import classproperty
 
 # Import subcomponents for running energy min with GMX
 from .gmx_prep_component import PrepGmxComponent
@@ -15,11 +16,11 @@ __all__ = ["OptimGmxComponent"]
 class OptimGmxComponent(TacticComponent):
     """Main entry component for running FF assignment."""
 
-    @classmethod
+    @classproperty
     def input(cls):
         return InputOptim
 
-    @classmethod
+    @classproperty
     def output(cls):
         return OutputOptim
 
@@ -37,16 +38,17 @@ class OptimGmxComponent(TacticComponent):
         optimOutput = PostGmxComponent.compute(computeOutput)
         return True, optimOutput
 
-    def get_version(cls) -> str:
+    @classproperty
+    def version(cls) -> str:
         """Finds program, extracts version, returns normalized version string.
         Returns
         -------
         str
             Return a valid, safe python version string.
         """
-        raise NotImplementedError
+        return ""
 
-    @classmethod
+    @classproperty
     def strategy_comps(cls) -> Any:
         """Returns the strategy component this (tactic) component belongs to.
         Returns

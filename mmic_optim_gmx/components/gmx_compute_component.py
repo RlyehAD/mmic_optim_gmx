@@ -1,5 +1,6 @@
 # Import models
 from ..models import InputComputeGmx, OutputComputeGmx
+from cmselemental.util.decorators import classproperty
 
 # Import components
 from mmic_cmd.components import CmdComponent
@@ -16,13 +17,23 @@ __all__ = ["ComputeGmxComponent"]
 
 
 class ComputeGmxComponent(GenericComponent):
-    @classmethod
+    @classproperty
     def input(cls):
         return InputComputeGmx
 
-    @classmethod
+    @classproperty
     def output(cls):
         return OutputComputeGmx
+
+    @classproperty
+    def version(cls) -> str:
+        """Finds program, extracts version, returns normalized version string.
+        Returns
+        -------
+        str
+            Return a valid, safe python version string.
+        """
+        return ""
 
     def execute(
         self,
@@ -35,7 +46,7 @@ class ComputeGmxComponent(GenericComponent):
 
         # Call gmx pdb2gmx, mdrun, etc. here
         if isinstance(inputs, dict):
-            inputs = self.input()(**inputs)
+            inputs = self.input(**inputs)
 
         proc_input, mdp_file, gro_file, top_file = (
             inputs.proc_input,

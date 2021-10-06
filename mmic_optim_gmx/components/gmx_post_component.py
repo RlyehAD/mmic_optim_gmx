@@ -2,6 +2,7 @@
 from mmic_optim.models.output import OutputOptim
 from mmelemental.models import Molecule, Trajectory
 from ..models import OutputComputeGmx
+from cmselemental.util.decorators import classproperty
 
 # Import components
 from mmic.components.blueprints import GenericComponent
@@ -15,13 +16,23 @@ __all__ = ["PostGmxComponent"]
 
 
 class PostGmxComponent(GenericComponent):
-    @classmethod
+    @classproperty
     def input(cls):
         return OutputComputeGmx
 
-    @classmethod
+    @classproperty
     def output(cls):
         return OutputComputeGmx
+
+    @classproperty
+    def version(cls) -> str:
+        """Finds program, extracts version, returns normalized version string.
+        Returns
+        -------
+        str
+            Return a valid, safe python version string.
+        """
+        return ""
 
     def execute(
         self,
@@ -37,6 +48,8 @@ class PostGmxComponent(GenericComponent):
         to mmic schema. But right now it can only
         be applied to single molecule conditions
         """
+        if isinstance(inputs, dict):
+            inputs = self.input(**inputs)
 
         traj_file = inputs.trajectory
         if inputs.proc_input.trajectory is None:
