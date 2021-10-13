@@ -166,7 +166,6 @@ class ComputeGmxComponent(GenericComponent):
 
         tpr_file = inputs["tpr_file"]
         tpr_fname = ntpath.basename(tpr_file)
-        
 
         cmd = [
             inputs["proc_input"].engine,  # Should here be gmx_mpi?
@@ -196,7 +195,11 @@ class ComputeGmxComponent(GenericComponent):
 
         return {
             "command": cmd,
-            "as_binary": [tpr_fname, trr_file.name, edr_file.name], # For outfiles, mmic_cmd does not use ntpath.basename to obtain the basic name
+            "as_binary": [
+                tpr_fname,
+                trr_file.name,
+                edr_file.name,
+            ],  # For outfiles, mmic_cmd does not use ntpath.basename to obtain the basic name
             "infiles": [tpr_file],
             "outfiles": outfiles,
             # "outfiles_track": outfiles,

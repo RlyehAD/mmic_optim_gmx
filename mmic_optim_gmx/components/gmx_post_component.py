@@ -65,7 +65,9 @@ class PostGmxComponent(GenericComponent):
         if inputs.proc_input.trajectory is None:
             for key in traj_names:
                 for val in traj_file:
-                    traj[key]: Trajectory.from_file(val)# Use names in Molecule to name trajectories
+                    traj[key]: Trajectory.from_file(
+                        val
+                    )  # Use names in Molecule to name trajectories
                     traj_file.remove(val)
                     break
         else:
@@ -84,8 +86,8 @@ class PostGmxComponent(GenericComponent):
 
         mol_file = inputs.molecule
         print(mol_file)
-        #mol_name = list(inputs.proc_input.system)[0]
-        #mol_files = {mol_name: mol_file}
+        # mol_name = list(inputs.proc_input.system)[0]
+        # mol_files = {mol_name: mol_file}
         mol = [Molecule.from_file(mol_file)]
         self.cleanup([inputs.scratch_dir])
 

@@ -113,7 +113,9 @@ class PrepGmxComponent(GenericComponent):
 
         mol, ff = list(inputs.system.items()).pop()
 
-        gro_file = tempfile.NamedTemporaryFile(suffix=".gro", delete=False)  # output gro
+        gro_file = tempfile.NamedTemporaryFile(
+            suffix=".gro", delete=False
+        )  # output gro
         top_file = tempfile.NamedTemporaryFile(suffix=".top", delete=False)
         boxed_gro_file = tempfile.NamedTemporaryFile(suffix=".gro", delete=False)
 
@@ -192,8 +194,8 @@ class PrepGmxComponent(GenericComponent):
             {
                 "command": cmd,
                 "infiles": [inputs["gro_file"]],
-                "outfiles": outfiles,#[Path(file) for file in outfiles],
-                #"outfiles_track": outfiles,#[Path(file) for file in outfiles],
+                "outfiles": outfiles,  # [Path(file) for file in outfiles],
+                # "outfiles_track": outfiles,#[Path(file) for file in outfiles],
                 "scratch_directory": scratch_directory,
                 "environment": env,
                 "scratch_messy": True,
