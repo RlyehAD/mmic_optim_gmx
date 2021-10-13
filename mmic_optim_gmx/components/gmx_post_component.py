@@ -95,7 +95,7 @@ class PostGmxComponent(GenericComponent):
             True,
             OutputOptim(
                 proc_input=inputs.proc_input,
-                molecule=mol,
+                molecule=mols,
                 trajectory=traj,
                 schema_name=inputs.proc_input.schema_name,
                 schema_version=inputs.proc_input.schema_version,
