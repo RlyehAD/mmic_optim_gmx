@@ -85,10 +85,10 @@ class PostGmxComponent(GenericComponent):
             }
 
         mol_file = inputs.molecule
+        mol = Molecule.from_file(mol_file)
         print(mol_file)
-        # mol_name = list(inputs.proc_input.system)[0]
-        # mol_files = {mol_name: mol_file}
-        mol = [Molecule.from_file(mol_file)]
+        mols = [mol,]
+        print(mol)
         self.cleanup([inputs.scratch_dir])
 
         return (
