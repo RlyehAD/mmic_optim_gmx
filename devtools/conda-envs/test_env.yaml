@@ -18,12 +18,12 @@ dependencies:
     - pytest-cov
     - mmic
     - cmselemental
-    #- git+https://github.com/parmed/parmed.git
+    - git+https://github.com/parmed/parmed.git
     - git+https://github.com/RlyehAD/mmic_parmed.git
     - git+https://github.com/MolSSI/mmic_optim.git
     - git+https://github.com/MolSSI/mmelemental.git
     - git+https://github.com/MolSSI/mmic_translator.git
-    - git+https://github.com/MolSSI/mmic_parmed.git
+    #- git+https://github.com/MolSSI/mmic_parmed.git
     - git+https://github.com/MolSSI/mmic_mda.git
     #- git+https://github.com/MolSSI/mmic_cmd.git
     - git+https://github.com/RlyehAD/mmic_cmd.git
