@@ -22,7 +22,7 @@ class PostGmxComponent(GenericComponent):
 
     @classproperty
     def output(cls):
-        return OutputComputeGmx
+        return OutputOptim
 
     @classproperty
     def version(cls) -> str:
@@ -51,25 +51,42 @@ class PostGmxComponent(GenericComponent):
         if isinstance(inputs, dict):
             inputs = self.input(**inputs)
 
-        traj_file = inputs.trajectory
+        traj_names = []
+        traj = {}
+
+        for mol in list(inputs.proc_input.system):
+            traj_names.append(mol.name)
+
+        traj_file = [inputs.trajectory]
+        # In the future, inputs.trajectory should be inherently a list
+        # Since the code only deals with one molecule at a time right now
+        # it's necessary to make it a list manually
+
         if inputs.proc_input.trajectory is None:
-            traj_name = list(inputs.proc_input.molecule)[0]
-            traj = {traj_name: Trajectory.from_file(traj_file)}
+            for key in traj_names:
+                for val in traj_file:
+                    traj[key]: Trajectory.from_file(val)# Use names in Molecule to name trajectories
+                    traj_file.remove(val)
+                    break
         else:
+            """
             traj_name = list(inputs.proc_input.trajectory)[0]
             traj_files = {traj_name: traj_file}
             traj = {
-                key: Trajectory.from_file(trajs_files[key])
+                key: Trajectory.from_file(traj_files[key])
+                for key in inputs.proc_input.trajectory
+            }
+            """
+            traj = {
+                key: Trajectory.from_file(inputs.trajectory)
                 for key in inputs.proc_input.trajectory
             }
 
         mol_file = inputs.molecule
-        mol_name = list(inputs.proc_input.molecule)[0]
-        mol_files = {mol_name: mol_file}
-        mol = {
-            key: Molecule.from_file(mol_files[key])
-            for key in inputs.proc_input.molecule
-        }
+        print(mol_file)
+        #mol_name = list(inputs.proc_input.system)[0]
+        #mol_files = {mol_name: mol_file}
+        mol = [Molecule.from_file(mol_file)]
         self.cleanup([inputs.scratch_dir])
 
         return (

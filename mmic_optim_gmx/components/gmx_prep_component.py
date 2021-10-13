@@ -97,8 +97,8 @@ class PrepGmxComponent(GenericComponent):
         mdp_inputs["pbc"] = pbc
 
         # Write .mdp file
-        mdp_file = tempfile.NamedTemporaryFile(suffix=".mdp")
-        with open(mdp_file, "w") as inp:
+        mdp_file = tempfile.NamedTemporaryFile(suffix=".mdp", delete=False)
+        with open(mdp_file.name, "w") as inp:
             for key, val in mdp_inputs.items():
                 inp.write(f"{key} = {val}\n")
         """
@@ -113,17 +113,17 @@ class PrepGmxComponent(GenericComponent):
 
         mol, ff = list(inputs.system.items()).pop()
 
-        gro_file = tempfile.NamedTemporaryFile(suffix=".gro")  # output gro
-        top_file = tempfile.NamedTemporaryFile(suffix=".top")
-        boxed_gro_file = tempfile.NamedTemporaryFile(suffix=".gro")
+        gro_file = tempfile.NamedTemporaryFile(suffix=".gro", delete=False)  # output gro
+        top_file = tempfile.NamedTemporaryFile(suffix=".top", delete=False)
+        boxed_gro_file = tempfile.NamedTemporaryFile(suffix=".gro", delete=False)
 
-        mol.to_file(gro_file, translator="mmic_parmed")
-        ff.to_file(top_file, translator="mmic_parmed")
+        mol.to_file(gro_file.name, translator="mmic_parmed")
+        ff.to_file(top_file.name, translator="mmic_parmed")
 
         input_model = {
-            "gro_file": gro_file,
+            "gro_file": gro_file.name,
             "proc_input": inputs,
-            "boxed_gro_file": boxed_gro_file,
+            "boxed_gro_file": boxed_gro_file.name,
         }
         clean_files, cmd_input = self.build_input(input_model)
         rvalue = CmdComponent.compute(cmd_input)
@@ -136,9 +136,9 @@ class PrepGmxComponent(GenericComponent):
             proc_input=inputs,
             schema_name=inputs.schema_name,
             schema_version=inputs.schema_version,
-            mdp_file=mdp_file,
-            forcefield=top_file,
-            molecule=boxed_gro_file,
+            mdp_file=mdp_file.name,
+            forcefield=top_file.name,
+            molecule=boxed_gro_file.name,
             scratch_dir=scratch_dir,
         )
 
@@ -184,14 +184,16 @@ class PrepGmxComponent(GenericComponent):
             boxed_gro_file,
         ]
         outfiles = [boxed_gro_file]
+        print(boxed_gro_file)
 
+        # Here boxed_gro_file is just an str
         return (
             clean_files,
             {
                 "command": cmd,
                 "infiles": [inputs["gro_file"]],
-                "outfiles": [Path(file).name for file in outfiles],
-                "outfiles_track": [Path(file).name for file in outfiles],
+                "outfiles": outfiles,#[Path(file) for file in outfiles],
+                #"outfiles_track": outfiles,#[Path(file) for file in outfiles],
                 "scratch_directory": scratch_directory,
                 "environment": env,
                 "scratch_messy": True,

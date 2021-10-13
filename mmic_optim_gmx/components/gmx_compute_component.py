@@ -11,6 +11,7 @@ from pathlib import Path
 import os
 import shutil
 import tempfile
+import ntpath
 
 
 __all__ = ["ComputeGmxComponent"]
@@ -53,16 +54,16 @@ class ComputeGmxComponent(GenericComponent):
             inputs.mdp_file,
             inputs.molecule,
             inputs.forcefield,
-        )
+        )  # The parameters here are all str
 
-        tpr_file = tempfile.NamedTemporaryFile(suffix=".tpr")
+        tpr_file = tempfile.NamedTemporaryFile(suffix=".tpr", delete=False)
 
         input_model = {
             "proc_input": proc_input,
             "mdp_file": mdp_file,
             "gro_file": gro_file,
             "top_file": top_file,
-            "tpr_file": tpr_file,
+            "tpr_file": tpr_file.name,
         }
 
         clean_files, cmd_input_grompp = self.build_input_grompp(input_model)
@@ -71,10 +72,10 @@ class ComputeGmxComponent(GenericComponent):
         self.cleanup([inputs.scratch_dir])
         tpr_dir = str(rvalue.scratch_directory)
 
-        input_model = {"proc_input": proc_input, "tpr_file": tpr_file}
+        input_model = {"proc_input": proc_input, "tpr_file": tpr_file.name}
         cmd_input_mdrun = self.build_input_mdrun(input_model)
         rvalue = CmdComponent.compute(cmd_input_mdrun)
-        self.cleanup([tpr_file, gro_file])
+        self.cleanup([tpr_file.name, gro_file])
         self.cleanup([tpr_dir])
 
         return True, self.parse_output(rvalue.dict(), proc_input)
@@ -127,14 +128,16 @@ class ComputeGmxComponent(GenericComponent):
             "-1",
         ]
         outfiles = [tpr_file]
+        print(tpr_file)
 
         return (
             clean_files,
             {
                 "command": cmd,
+                "as_binary": [tpr_file],
                 "infiles": [inputs["mdp_file"], inputs["gro_file"], inputs["top_file"]],
-                "outfiles": [Path(file).name for file in outfiles],
-                "outfiles_track": [Path(file).name for file in outfiles],
+                "outfiles": outfiles,  # [Path(file).name for file in outfiles],
+                # "outfiles_track": outfiles,#[Path(file).name for file in outfiles],
                 "scratch_directory": scratch_directory,
                 "environment": env,
                 "scratch_messy": True,
@@ -156,12 +159,14 @@ class ComputeGmxComponent(GenericComponent):
 
         scratch_directory = config.scratch_directory if config else None
 
-        log_fname = Path(tempfile.NamedTemporaryFile(suffix=".log")).name
-        trr_fname = Path(tempfile.NamedTemporaryFile(suffix=".trr")).name
-        edr_fname = Path(tempfile.NamedTemporaryFile(suffix=".edr")).name
-        gro_fname = Path(tempfile.NamedTemporaryFile(suffix=".gro")).name
+        log_file = tempfile.NamedTemporaryFile(suffix=".log", delete=False)
+        trr_file = tempfile.NamedTemporaryFile(suffix=".trr", delete=False)
+        edr_file = tempfile.NamedTemporaryFile(suffix=".edr", delete=False)
+        gro_file = tempfile.NamedTemporaryFile(suffix=".gro", delete=False)
 
         tpr_file = inputs["tpr_file"]
+        tpr_fname = ntpath.basename(tpr_file)
+        
 
         cmd = [
             inputs["proc_input"].engine,  # Should here be gmx_mpi?
@@ -169,16 +174,17 @@ class ComputeGmxComponent(GenericComponent):
             "-s",
             tpr_file,
             "-o",
-            trr_fname,
+            trr_file.name,
             "-c",
-            gro_fname,
+            gro_file.name,
             "-e",
-            edr_fname,
+            edr_file.name,
             "-g",
-            log_fname,
+            log_file.name,
         ]
 
-        outfiles = [trr_fname, gro_fname, edr_fname, log_fname]
+        outfiles = [trr_file.name, gro_file.name, edr_file.name, log_file.name]
+        print(tpr_file)
 
         # For extra args
         if inputs["proc_input"].keywords:
@@ -190,10 +196,10 @@ class ComputeGmxComponent(GenericComponent):
 
         return {
             "command": cmd,
-            "as_binary": [Path(tpr_file).name],
+            "as_binary": [tpr_fname, trr_file.name, edr_file.name], # For outfiles, mmic_cmd does not use ntpath.basename to obtain the basic name
             "infiles": [tpr_file],
             "outfiles": outfiles,
-            "outfiles_track": outfiles,
+            # "outfiles_track": outfiles,
             "scratch_directory": scratch_directory,
             "environment": env,
             "scratch_messy": True,
@@ -201,17 +207,19 @@ class ComputeGmxComponent(GenericComponent):
 
     def parse_output(
         self, output: Dict[str, str], inputs: Dict[str, Any]
-    ) -> InputComputeGmx:
+    ) -> OutputComputeGmx:
         # stdout = output["stdout"]
         # stderr = output["stderr"]
         outfiles = output["outfiles"]
         scratch_dir = str(output["scratch_directory"])
 
-        traj, conf, energy, log = outfiles.values()
+        traj, conf, energy, log = outfiles.keys()
+        print(conf)
+        print(traj)
 
-        return self.output()(
+        return self.output(
             proc_input=inputs,
-            molecule=str(conf),
+            molecule=conf,
             trajectory=str(traj),
             scratch_dir=scratch_dir,
             # stdout=stdout,
