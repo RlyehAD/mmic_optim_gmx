@@ -39,7 +39,7 @@ def test_preprocess_component():
         engine="gmx",  # This is important
         schema_name="test",
         schema_version=1.0,
-        system={mol:ff},
+        system={mol: ff},
         boundary=(
             "periodic",
             "periodic",
