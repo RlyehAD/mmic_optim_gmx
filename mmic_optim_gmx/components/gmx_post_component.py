@@ -54,8 +54,8 @@ class PostGmxComponent(GenericComponent):
         traj_names = []
         traj = {}
 
-        for mol in list(inputs.proc_input.system):
-            traj_names.append(mol.name)
+        for key in list(inputs.proc_input.system):
+            traj_names.append(key.name)
 
         traj_file = [inputs.trajectory]
         # In the future, inputs.trajectory should be inherently a list
@@ -85,7 +85,7 @@ class PostGmxComponent(GenericComponent):
             }
 
         mol_file = inputs.molecule
-        mol = Molecule.from_file(mol_file)
+        mol = Molecule.from_file(mol_file, translator="mmic_mda")
         print(mol_file)
         mols = [mol]
         print(mol)
