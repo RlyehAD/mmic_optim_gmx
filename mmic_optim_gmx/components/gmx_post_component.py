@@ -71,25 +71,17 @@ class PostGmxComponent(GenericComponent):
                     traj_file.remove(val)
                     break
         else:
-            """
-            traj_name = list(inputs.proc_input.trajectory)[0]
-            traj_files = {traj_name: traj_file}
-            traj = {
-                key: Trajectory.from_file(traj_files[key])
-                for key in inputs.proc_input.trajectory
-            }
-            """
             traj = {
                 key: Trajectory.from_file(inputs.trajectory)
                 for key in inputs.proc_input.trajectory
             }
 
         mol_file = inputs.molecule
-        mol = Molecule.from_file(mol_file, translator="mmic_mda")
-        print(mol_file)
+        mol = Molecule.from_file(mol_file)
         mols = [mol]
-        print(mol)
         self.cleanup([inputs.scratch_dir])
+        self.cleanup([inputs.trajectory])
+        self.cleanup([mol_file])
 
         return (
             True,

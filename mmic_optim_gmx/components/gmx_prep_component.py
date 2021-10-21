@@ -97,50 +97,40 @@ class PrepGmxComponent(GenericComponent):
         mdp_inputs["pbc"] = pbc
 
         # Write .mdp file
-        mdp_file = tempfile.NamedTemporaryFile(suffix=".mdp", delete=False)
-        with open(mdp_file.name, "w") as inp:
+        mdp_file = tempfile.NamedTemporaryFile(suffix=".mdp", delete=False).name
+        with open(mdp_file, "w") as inp:
             for key, val in mdp_inputs.items():
                 inp.write(f"{key} = {val}\n")
-        """
-        fs = inputs.forcefield
-        mols = inputs.molecule
-
-        ff_name, ff = list(
-            fs.items()
-        ).pop()  # Here ff_name gets actually the related mol name, but it will not be used
-        mol_name, mol = list(mols.items()).pop()
-        """
 
         mol, ff = list(inputs.system.items()).pop()
 
-        gro_file = tempfile.NamedTemporaryFile(
-            suffix=".gro", delete=False
-        )  # output gro
-        top_file = tempfile.NamedTemporaryFile(suffix=".top", delete=False)
-        boxed_gro_file = tempfile.NamedTemporaryFile(suffix=".gro", delete=False)
+        gro_file = tempfile.NamedTemporaryFile(suffix=".gro").name  # output gro
+        top_file = tempfile.NamedTemporaryFile(suffix=".top").name
+        boxed_gro_file = tempfile.NamedTemporaryFile(suffix=".gro").name
 
-        mol.to_file(gro_file.name, translator="mmic_parmed")
-        ff.to_file(top_file.name, translator="mmic_parmed")
+        mol.to_file(gro_file, translator="mmic_parmed")
+        ff.to_file(top_file, translator="mmic_parmed")
 
         input_model = {
-            "gro_file": gro_file.name,
+            "gro_file": gro_file,
             "proc_input": inputs,
-            "boxed_gro_file": boxed_gro_file.name,
+            "boxed_gro_file": boxed_gro_file,
         }
-        clean_files, cmd_input = self.build_input(input_model)
+        cmd_input = self.build_input(input_model)
         rvalue = CmdComponent.compute(cmd_input)
 
-        ###boxed_gro_file = str(rvalue.outfiles[boxed_gro_file])
         scratch_dir = str(rvalue.scratch_directory)
-        self.cleanup(clean_files)  # Del the gro in the working dir
+        self.cleanup(
+            [gro_file]
+        )  # Del the gro in the working dir; !!!!!!!MUST INPUT A LIST HERE!!!!!!
 
         gmx_compute = InputComputeGmx(
             proc_input=inputs,
             schema_name=inputs.schema_name,
             schema_version=inputs.schema_version,
-            mdp_file=mdp_file.name,
-            forcefield=top_file.name,
-            molecule=boxed_gro_file.name,
+            mdp_file=mdp_file,
+            forcefield=top_file,
+            molecule=boxed_gro_file,
             scratch_dir=scratch_dir,
         )
 
@@ -162,10 +152,8 @@ class PrepGmxComponent(GenericComponent):
     ) -> Dict[str, Any]:
 
         assert inputs["proc_input"].engine == "gmx", "Engine must be gmx (Gromacs)!"
-        clean_files = []
 
         boxed_gro_file = inputs["boxed_gro_file"]
-        clean_files.append(inputs["gro_file"])
 
         env = os.environ.copy()
 
@@ -186,18 +174,14 @@ class PrepGmxComponent(GenericComponent):
             boxed_gro_file,
         ]
         outfiles = [boxed_gro_file]
-        print(boxed_gro_file)
 
         # Here boxed_gro_file is just an str
-        return (
-            clean_files,
-            {
-                "command": cmd,
-                "infiles": [inputs["gro_file"]],
-                "outfiles": outfiles,  # [Path(file) for file in outfiles],
-                # "outfiles_track": outfiles,#[Path(file) for file in outfiles],
-                "scratch_directory": scratch_directory,
-                "environment": env,
-                "scratch_messy": True,
-            },
-        )
+        return {
+            "command": cmd,
+            "infiles": [inputs["gro_file"]],
+            "outfiles": outfiles,  # [Path(file) for file in outfiles],
+            "outfiles_track": outfiles,  # [Path(file) for file in outfiles],
+            "scratch_directory": scratch_directory,
+            "environment": env,
+            "scratch_messy": True,
+        }
