@@ -77,7 +77,6 @@ class ComputeGmxComponent(GenericComponent):
         rvalue = CmdComponent.compute(cmd_input_mdrun)
         self.cleanup([tpr_file, gro_file])
         self.cleanup(grompp_scratch_dir)
- 
 
         return True, self.parse_output(rvalue.dict(), proc_input)
 
@@ -159,10 +158,10 @@ class ComputeGmxComponent(GenericComponent):
 
         scratch_directory = config.scratch_directory if config else None
 
-        log_file = tempfile.NamedTemporaryFile(suffix=".log").name  
-        trr_file = tempfile.NamedTemporaryFile(suffix=".trr").name  
-        edr_file = tempfile.NamedTemporaryFile(suffix=".edr").name  
-        gro_file = tempfile.NamedTemporaryFile(suffix=".gro").name  
+        log_file = tempfile.NamedTemporaryFile(suffix=".log").name
+        trr_file = tempfile.NamedTemporaryFile(suffix=".trr").name
+        edr_file = tempfile.NamedTemporaryFile(suffix=".edr").name
+        gro_file = tempfile.NamedTemporaryFile(suffix=".gro").name
 
         tpr_file = inputs["tpr_file"]
         tpr_fname = ntpath.basename(tpr_file)
