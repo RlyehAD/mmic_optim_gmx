@@ -77,7 +77,7 @@ class PostGmxComponent(GenericComponent):
             }
 
         mol_file = inputs.molecule
-        mol = Molecule.from_file(mol_file)
+        mol = Molecule.from_file(mol_file, translator="mmic_mda")
         mols = [mol]
         self.cleanup([inputs.scratch_dir])
         self.cleanup([inputs.trajectory])
