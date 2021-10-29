@@ -49,7 +49,7 @@ inp = mmic_optim.InputMD(
 ```
 Examples for the Parameters:
 
-The unit for *TORLERANCE* is kJ/(mol $\times$ nm)
+The unit for *TORLERANCE* is kJ/(mol \* nm)
 
 *EM_ALGORITHM*  "cg"
 
